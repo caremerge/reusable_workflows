@@ -1,0 +1,37 @@
+name: Manual Production Deployment
+on: 
+  workflow_call:
+    inputs:
+      lambda_name:
+        description: 'Name of the Lambda'
+        required: true
+      lambda_role:
+        description: 'Role Associated with the Lambda'
+        required: true
+      aws_region:
+        description: 'The AWS Region to deploy on'
+        required: true
+        default: 'us-east-1'
+    secrets:
+      aws_access_key_id:
+        description: 'Access Key ID of the AWS Account'
+        required: true
+      aws_secret_access_key:
+        description: 'Secret Access Key of the AWS Account'
+        required: true
+
+jobs:
+  deploy:
+    name: Deploy a Job
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/setup
+      - name: Deploy To Production
+        uses: ./.github/actions/deployment
+        with:
+          lambda-name: ${{ inputs.lambda_name }}
+          lambda-role: ${{ inputs.lambda_role }}
+          aws-access-key-id: ${{ secrets.aws_access_key_id }}
+          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+          aws-region: ${{ inputs.aws_region }}
